@@ -8,12 +8,6 @@ RUN apt-get update && apt-get install -y \
     curl git \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy lock files for dependency installation
-COPY package.json bun.lockb bun.lock ./
-
-# Install dependencies
-RUN bun install --frozen-lockfile
-
 # Stage 2: Runtime
 FROM deps
 
@@ -28,6 +22,13 @@ ENV PORT=3000
 
 # Copy application code
 COPY . .
+
+# Copy lock files for dependency installation
+COPY package.json bun.lockb bun.lock ./
+
+# Install dependencies
+RUN bun install --frozen-lockfile
+
 
 # Start the application
 CMD ["bun", "dev"]
