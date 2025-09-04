@@ -5,7 +5,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: "bun dev"
+    command: "bun dev --port 3001"
+    ports:
+      - "3001:3001"
     working_dir: /app/apps/web/client
     volumes:
       - ./:/app
