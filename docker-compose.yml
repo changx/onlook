@@ -5,13 +5,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    command: "bun dev"
+    working_dir: /app/apps/web/client
+    volumes:
+      - ./:/app
     env_file:
-      - apps/web/client/.env
-    ports:
-      - "3000:3000"
+      - ./apps/web/client/.env
     restart: unless-stopped
-    network_mode: host
-
-networks:
-  supabase_network_onlook-web:
-    external: true
