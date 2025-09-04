@@ -32,6 +32,7 @@ import { and, eq, ne } from 'drizzle-orm';
 import { z } from 'zod';
 import { projectCreateRequestRouter } from './createRequest';
 import { forkTemplate } from './template';
+import { TRPCError } from '@trpc/server';
 
 export const projectRouter = createTRPCRouter({
     hasAccess: protectedProcedure
@@ -117,6 +118,13 @@ export const projectRouter = createTRPCRouter({
                 const finalBuffer = useCompressed ? (compressedImage.buffer ?? buffer) : buffer;
 
                 const path = getScreenshotPath(project.id, finalMimeType);
+
+                if (!ctx.supabase) {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: 'Supabase client not found',
+                    });
+                }
 
                 const { data, error } = await ctx.supabase.storage
                     .from(STORAGE_BUCKETS.PREVIEW_IMAGES)

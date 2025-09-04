@@ -145,6 +145,13 @@ export const githubRouter = createTRPCRouter({
         .mutation(async ({ ctx }) => {
             const origin = process.env.NEXT_PUBLIC_APP_URL;
 
+            if (!ctx.supabase) {
+                throw new TRPCError({
+                    code: 'INTERNAL_SERVER_ERROR',
+                    message: 'Supabase client not found',
+                });
+            }
+
             const { data, error } = await ctx.supabase.auth.signInWithOAuth({
                 provider: 'github',
                 options: {
