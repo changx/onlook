@@ -10,11 +10,12 @@ import { userSettingsRouter } from './user-settings';
 
 export const userRouter = createTRPCRouter({
     get: protectedProcedure.query(async ({ ctx }) => {
+        console.log(">>> getting user");
         const authUser = ctx.user;
         const user = await ctx.db.query.users.findFirst({
             where: eq(users.id, authUser.id),
         });
-
+        console.log(">>> user", user);
         const { displayName, firstName, lastName } = getUserName(authUser);
         const userData = user ? toUser({
             ...user,
@@ -24,6 +25,7 @@ export const userRouter = createTRPCRouter({
             email: user.email ?? authUser.email,
             avatarUrl: user.avatarUrl ?? authUser.user_metadata.avatarUrl,
         }) : null;
+        console.log(">>> userData", userData);
         return userData;
     }),
     getById: protectedProcedure.input(z.string()).query(async ({ ctx, input }) => {

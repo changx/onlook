@@ -10,6 +10,7 @@ import { createTRPCRouter, protectedProcedure } from '../../trpc';
 export const usageRouter = createTRPCRouter({
     get: protectedProcedure.query(async ({ ctx }): Promise<UsageResult> => {
         const user = ctx.user;
+        console.log('>>>>>> getting usage for user', user.id);
         return ctx.db.transaction(async (tx) => {
             // Calculate date ranges
             const now = new Date();
@@ -17,12 +18,18 @@ export const usageRouter = createTRPCRouter({
             const subscription = await tx.query.subscriptions.findFirst({
                 where: and(eq(subscriptions.userId, user.id), eq(subscriptions.status, SubscriptionStatus.ACTIVE)),
             });
+            console.log('>>>>>> subscription', subscription);
 
             // if no subscription then user is on a free plan
             if (!subscription) {
-                return getFreePlanUsage(tx, user.id, now);
+                console.log('>>>>>> no subscription, getting free plan usage');
+                const freePlanUsage = await getFreePlanUsage(tx, user.id, now);
+                console.log('>>>>>> freePlanUsage', freePlanUsage);
+                return freePlanUsage;
             }
-            return getSubscriptionUsage(tx, user.id, now);
+            const subscriptionUsage = await getSubscriptionUsage(tx, user.id, now);
+            console.log('>>>>>> subscriptionUsage', subscriptionUsage);
+            return subscriptionUsage;
         });
     }),
 

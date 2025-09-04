@@ -18,6 +18,7 @@ export const subscriptionRouter = createTRPCRouter({
         return subscription ?? null;
     }),
     get: protectedProcedure.query(async ({ ctx }) => {
+        console.log(">>> getting subscription");
         const user = ctx.user;
         const subscription = await ctx.db.query.subscriptions.findFirst({
             where: and(
@@ -29,6 +30,7 @@ export const subscriptionRouter = createTRPCRouter({
                 price: true,
             },
         });
+        console.log(">>> subscription", subscription);
 
         if (!subscription) {
             console.log('No active subscription found for user', user.id);
@@ -36,11 +38,13 @@ export const subscriptionRouter = createTRPCRouter({
         }
 
         // If there is a scheduled price, we need to fetch it from the database.
+        console.log(">>> scheduledPriceId", subscription.scheduledPriceId);
         let scheduledPrice = null;
         if (subscription.scheduledPriceId) {
             scheduledPrice = await ctx.db.query.prices.findFirst({
                 where: eq(prices.id, subscription.scheduledPriceId),
             }) ?? null;
+            console.log(">>> scheduledPrice", scheduledPrice);
         }
 
         return toSubscription(subscription, scheduledPrice);
