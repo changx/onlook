@@ -7,18 +7,42 @@ import { api } from '~/trpc/server';
 export async function GET(request: Request) {
     const { searchParams, origin } = new URL(request.url);
     const code = searchParams.get('code');
+    const error = searchParams.get('error');
+
+    // Get the correct base URL for redirects
+    const forwardedHost = request.headers.get('x-forwarded-host');
+    const forwardedProto = request.headers.get('x-forwarded-proto') || 'https';
+    const baseURL = forwardedHost ? `${forwardedProto}://${forwardedHost}` : origin;
+
+    if (error) {
+        console.error(`OAuth error: ${error}`);
+        return NextResponse.redirect(`${baseURL}/auth/auth-code-error`);
+    }
 
     if (code) {
         const supabase = await createClient();
-        const { error, data } = await supabase.auth.exchangeCodeForSession(code);
-        if (!error) {
+        
+        try {
+            // Use the newer method for PKCE flow
+            const { error: exchangeError, data } = await supabase.auth.exchangeCodeForSession(code);
+            
+            if (exchangeError) {
+                console.error(`Error exchanging code for session: ${exchangeError.message}`);
+                return NextResponse.redirect(`${baseURL}/auth/auth-code-error`);
+            }
+
+            if (!data.user) {
+                console.error('No user returned from OAuth exchange');
+                return NextResponse.redirect(`${baseURL}/auth/auth-code-error`);
+            }
+
             const user = await api.user.upsert({
                 id: data.user.id,
             });
 
             if (!user) {
                 console.error(`Failed to create user for id: ${data.user.id}`, { user });
-                return NextResponse.redirect(`${origin}/auth/auth-code-error`);
+                return NextResponse.redirect(`${baseURL}/auth/auth-code-error`);
             }
 
             trackEvent({
@@ -34,18 +58,15 @@ export async function GET(request: Request) {
                 }
             });
 
-            const forwardedHost = request.headers.get('x-forwarded-host');
             // Redirect to the redirect page which will handle the return URL
-            if (forwardedHost) {
-                const forwardedProto = request.headers.get('x-forwarded-proto') || 'https';
-                return NextResponse.redirect(`${forwardedProto}://${forwardedHost}${Routes.AUTH_REDIRECT}`);
-            } else {
-                return NextResponse.redirect(`${origin}${Routes.AUTH_REDIRECT}`);
-            }
+            return NextResponse.redirect(`${baseURL}${Routes.AUTH_REDIRECT}`);
+            
+        } catch (err) {
+            console.error('Unexpected error during OAuth callback:', err);
+            return NextResponse.redirect(`${baseURL}/auth/auth-code-error`);
         }
-        console.error(`Error exchanging code for session: ${error}`);
     }
 
     // return the user to an error page with instructions
-    return NextResponse.redirect(`${origin}/auth/auth-code-error`);
+    return NextResponse.redirect(`${baseURL}/auth/auth-code-error`);
 }

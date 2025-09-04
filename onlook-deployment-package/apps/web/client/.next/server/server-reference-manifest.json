@@ -1,0 +1,50 @@
+{
+  "node": {
+    "0072acd58c9785773d6214750c9f4ab33b32c82725": {
+      "workers": {
+        "app/_not-found/page": {
+          "moduleId": "[project]/apps/web/client/.next-internal/server/app/_not-found/page/actions.js { ACTIONS_MODULE0 => \"[project]/apps/web/client/src/app/login/actions.tsx [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "devLogin",
+          "filename": "apps/web/client/src/app/login/actions.tsx"
+        },
+        "app/page": {
+          "moduleId": "[project]/apps/web/client/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/apps/web/client/src/app/login/actions.tsx [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "devLogin",
+          "filename": "apps/web/client/src/app/login/actions.tsx"
+        }
+      },
+      "layer": {
+        "app/_not-found/page": "action-browser",
+        "app/page": "action-browser"
+      },
+      "filename": "apps/web/client/src/app/login/actions.tsx",
+      "exportedName": "devLogin"
+    },
+    "40716512893293b50ce97aa2c3124995d02af63a3d": {
+      "workers": {
+        "app/_not-found/page": {
+          "moduleId": "[project]/apps/web/client/.next-internal/server/app/_not-found/page/actions.js { ACTIONS_MODULE0 => \"[project]/apps/web/client/src/app/login/actions.tsx [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "login",
+          "filename": "apps/web/client/src/app/login/actions.tsx"
+        },
+        "app/page": {
+          "moduleId": "[project]/apps/web/client/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/apps/web/client/src/app/login/actions.tsx [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "login",
+          "filename": "apps/web/client/src/app/login/actions.tsx"
+        }
+      },
+      "layer": {
+        "app/_not-found/page": "action-browser",
+        "app/page": "action-browser"
+      },
+      "filename": "apps/web/client/src/app/login/actions.tsx",
+      "exportedName": "login"
+    }
+  },
+  "edge": {},
+  "encryptionKey": "oYSMyvx9AdBDqjnWeJWArSo1x/SgGQ5pmtcU4AnY7ZI="
+}

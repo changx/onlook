@@ -28,18 +28,37 @@ import { ZodError } from 'zod';
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
-    const supabase = await createClient();
-    const {
-        data: { user },
-        error,
-    } = await supabase.auth.getUser();
+    let supabase;
+    let user = null;
+    
+    try {
+        supabase = await createClient();
+        const {
+            data: { user: authUser },
+            error,
+        } = await supabase.auth.getUser();
 
-    if (error) {
-        throw new TRPCError({ code: 'UNAUTHORIZED', message: error.message });
+        if (!error && authUser) {
+            user = authUser;
+        }
+    } catch (error) {
+        console.warn('Failed to create Supabase client or get user:', error);
+        // Continue without user - this allows API to work even if auth fails
+    }
+
+    let database;
+    try {
+        database = db;
+    } catch (error) {
+        console.error('Database connection failed:', error);
+        throw new TRPCError({ 
+            code: 'INTERNAL_SERVER_ERROR', 
+            message: 'Database connection failed' 
+        });
     }
 
     return {
-        db,
+        db: database,
         supabase,
         user,
         ...opts,

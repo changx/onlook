@@ -12,6 +12,18 @@ const nextConfig: NextConfig = {
     eslint: {
         ignoreDuringBuilds: true,
     },
+    async rewrites() {
+        // In preview environment, proxy API routes to port 8001
+        if (process.env.NODE_ENV === 'development' && process.env.PREVIEW_MODE) {
+            return [
+                {
+                    source: '/api/:path*',
+                    destination: 'http://localhost:8001/api/:path*'
+                }
+            ];
+        }
+        return [];
+    },
     ...(process.env.STANDALONE_BUILD === 'true' && { output: 'standalone' }),
 };
 

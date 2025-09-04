@@ -1,4 +1,4 @@
-import { createCallerFactory, createTRPCRouter } from '~/server/api/trpc';
+import { createCallerFactory, createTRPCRouter, publicProcedure } from '~/server/api/trpc';
 import {
     chatRouter,
     codeRouter,
@@ -24,6 +24,14 @@ import {
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
+    // Health check endpoint
+    health: publicProcedure.query(() => {
+        return { 
+            status: 'healthy', 
+            timestamp: new Date().toISOString(),
+            service: 'onlook-trpc'
+        };
+    }),
     sandbox: sandboxRouter,
     user: userRouter,
     invitation: invitationRouter,
