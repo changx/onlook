@@ -14,7 +14,7 @@ export default function DebugPage() {
                 const response = await fetch('/api/test');
                 const data = await response.json();
                 setApiTest({ success: true, data, status: response.status });
-            } catch (error) {
+            } catch (error: any) {
                 setApiTest({ success: false, error: error.message });
             }
 
@@ -23,7 +23,7 @@ export default function DebugPage() {
                 const response = await fetch('/api/trpc/health?batch=1&input=%7B%220%22%3A%7B%22json%22%3Anull%7D%7D');
                 const data = await response.json();
                 setTrpcTest({ success: true, data, status: response.status });
-            } catch (error) {
+            } catch (error: any) {
                 setTrpcTest({ success: false, error: error.message });
             }
 
